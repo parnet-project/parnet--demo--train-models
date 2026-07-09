@@ -25,8 +25,10 @@ Quick start::
 
 from .bed_utils import GenomicInterval, parse_tile_name
 from .datasets import FilteredMultiTaskDataset, center_crop_item
+from .extracted_datasets import prepare_chr8_gff, prepare_chr8_peaks, prepare_chr8_splice_sites
 from .filters import FilterFunction, filter_min_read_count, filter_minimum_length
 from .hfds_utils import convert_hfds_sample, hfds_sample_passes_filter
+from .splice_sites import extract_splice_sites_from_gff, extract_splice_sites_from_transcript_gff
 from .training_utils import MetricHistory
 from .sparse_utils import (
     ParnetDataElement,
@@ -72,6 +74,13 @@ __all__ = [
     # bed_utils
     "GenomicInterval",
     "parse_tile_name",
+    # splice_sites
+    "extract_splice_sites_from_transcript_gff",
+    "extract_splice_sites_from_gff",
+    # extracted_datasets
+    "prepare_chr8_gff",
+    "prepare_chr8_splice_sites",
+    "prepare_chr8_peaks",
     # training_utils
     "MetricHistory",
 ]

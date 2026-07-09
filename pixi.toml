@@ -261,20 +261,32 @@ metamotif               = { git = "git+https://github.com/lambosaur/metamotif.gi
 
 # ===============================================================
 
-[feature.parnet-libs-local.pypi-dependencies]
-
-pylbsr                  = { path = "externals/pylbsr",                  editable = true }
-parnet_analyses_libs    = { path = "externals/parnet_analyses_libs",    editable = true }
-parnet_additional_utils = { path = "externals/parnet_additional_utils", editable = true }
-metamotif               = { path = "externals/metamotif",               editable = true }
+# Disabled: these path deps point at externals/ checkouts that are often missing.
+# pixi always re-solves every environment in [environments] before installing any
+# single one, so a missing path here breaks `pixi install -e <any-env>` workspace-wide,
+# not just the -local environments that use it.
+# [feature.parnet-libs-local.pypi-dependencies]
+#
+# pylbsr                  = { path = "externals/pylbsr",                  editable = true }
+# parnet_analyses_libs    = { path = "externals/parnet_analyses_libs",    editable = true }
+# parnet_additional_utils = { path = "externals/parnet_additional_utils", editable = true }
+# metamotif               = { path = "externals/metamotif",               editable = true }
 
 # ===============================================================
 
 [environments]
 
-parnet-dev            = ["parnet-all", "parnet-cpu",      "parnet-libs-git",   "bio", "jupyter", "dev"]
-parnet-dev-local      = ["parnet-all", "parnet-cpu",      "parnet-libs-local", "bio", "jupyter", "dev"]
-parnet-dev-cu11       = ["parnet-all", "parnet-gpu-cu11", "parnet-libs-git",   "bio", "jupyter", "dev"]
-parnet-dev-cu11-local = ["parnet-all", "parnet-gpu-cu11", "parnet-libs-local", "bio", "jupyter", "dev"]
-parnet-dev-cu12       = ["parnet-gpu-cu12", "parnet-libs-git",   "bio", "jupyter", "dev"]
-parnet-dev-cu12-local = ["parnet-gpu-cu12", "parnet-libs-local", "bio", "jupyter", "dev"]
+# solve-group pairs each env with its future -local counterpart so they lock to
+# identical versions once re-enabled; cu11/cu12 are kept in separate groups since
+# they have incompatible CUDA/pytorch install mechanisms and must never be solved together.
+parnet-dev      = { features = ["parnet-all", "parnet-cpu",      "parnet-libs-git", "bio", "jupyter", "dev"], solve-group = "cpu" }
+parnet-dev-cu11 = { features = ["parnet-all", "parnet-gpu-cu11", "parnet-libs-git", "bio", "jupyter", "dev"], solve-group = "cu11" }
+parnet-dev-cu12 = { features = ["parnet-gpu-cu12", "parnet-libs-git", "bio", "jupyter", "dev"], solve-group = "cu12" }
+
+# Disabled: these require externals/ checkouts. pixi resolves every environment in
+# this table before installing any single one, so a missing externals/ path here
+# would block `pixi install -e parnet-dev-cu11` etc. even though it doesn't use these.
+# Re-enable by uncommenting these plus [feature.parnet-libs-local.pypi-dependencies] above.
+# parnet-dev-local      = { features = ["parnet-all", "parnet-cpu",      "parnet-libs-local", "bio", "jupyter", "dev"], solve-group = "cpu" }
+# parnet-dev-cu11-local = { features = ["parnet-all", "parnet-gpu-cu11", "parnet-libs-local", "bio", "jupyter", "dev"], solve-group = "cu11" }
+# parnet-dev-cu12-local = { features = ["parnet-gpu-cu12", "parnet-libs-local", "bio", "jupyter", "dev"], solve-group = "cu12" }
